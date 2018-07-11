@@ -102,7 +102,10 @@ int main(){
                     string email = mongo_get_array_item(doc,"emails",0);
                     string phone_number = mongo_get_array_item(doc,"phone_numbers",0);
                     string message_id = mongo_get_field(doc,"message_id");
-
+                    //string replace = std::replace( first_name.begin(), first_name.end(), 's', 's');
+                    using std::string;
+                    first_name.erase(replace(first_name.begin(), first_name.end(), '\'', ''), first_name.end());
+                    cout << first_name;
                     //cout << first_name <<"\t\t"<<last_name<<"\t\t"<<email<<"\t\t"<<phone_number<<"\t\t"<<message_id<< std::endl;
                     string sql("INSERT INTO lead_source (_id,first_name,last_name,email,phone_number,source,apply_date,message_id,submitted_to_vipkid) ");
                     sql += "VALUES('"+_id+"','"+first_name + "','"  + last_name+"','"+email+"','"+phone_number+"','"+source+"','"+apply_date+"','"+message_id+"','"+submitted_to_vipkid+"')";
