@@ -29,9 +29,8 @@ using namespace pqxx;
 /** v["a"] */
 string mongo_get_field(bsoncxx::v_noabi::document::view view, const char* field_name){
     try {
-        int x = view[field_name].length();// == bsoncxx::type::k_utf8);
-        if(x == 0){
-            // Element does not exist.
+        if (!view[field_name]){
+            cerr << "MONGO FIELD MISSING MISSING FIELD:"<<field_name << std::endl;
             return string("");
         }
         //cout << x<<"\n";
