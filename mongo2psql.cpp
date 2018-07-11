@@ -32,7 +32,7 @@ int main(){
         try {
 
             /* Create SQL statement */
-            sql = "INSERT INTO messages2 (email) VALUES('10') ";
+            sql = "INSERT INTO lead_source (_id,first_name,last_name,email,phone_number,source,apply_date,message_id,submitted_to_vipkid) VALUES('1','1','1','1','1','1','2018-01-01','1','0') ";
 
             /* Create a transactional object. */
             work W(C);
