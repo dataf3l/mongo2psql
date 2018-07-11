@@ -1,0 +1,61 @@
+
+Building on Mac OS X
+Install the XCode Command Line Tools:
+
+$ xcode-select --install
+The cmake utility is also required. First install Homebrew according to its instructions, then:
+
+$ brew install cmake
+Download the latest release tarball:
+
+$ curl -LO https://github.com/mongodb/mongo-c-driver/releases/download/1.11.0/mongo-c-driver-1.11.0.tar.gz
+$ tar xzf mongo-c-driver-1.11.0.tar.gz
+$ cd mongo-c-driver-1.11.0
+Build and install the driver:
+
+$ mkdir cmake-build
+$ cd cmake-build
+$ cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF ..
+All of the same variations described above (e.g., building only libbson, building documentation, etc.) are available when building on Mac OS X.
+
+
+OSX You might need to do this as well:
+cd mongo-cxx-driver/
+cd cmake-build
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+make
+sudo make install
+
+
+
+# Commands:
+
+
+ 2368  brew install libmongoc
+ 2374  brew install wget
+
+ 2365  git clone https://github.com/mongodb/mongo-cxx-driver.git     --branch releases/stable --depth 1
+ 2366  cd mongo-cxx-driver/build
+ 2367  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+ 2369  cd ..
+ 2370  wget https://github.com/mongodb/mongo-c-driver/releases/download/1.11.0/mongo-c-driver-1.11.0.tar.gz
+ 2376  tar xzf mongo-c-driver-1.11.0.tar.gz
+ 2381  cd mongo-c-driver-1.11.0
+ 2382  mkdir cmake-build
+ 2383  cd cmake-build
+ 2384  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF ..
+ 2386  make
+ 2387  sudo make install
+
+ compilation:
+
+ 2403  cd mongo-cxx-driver
+ 2406  mkdir cmake-build
+ 2407  cd cmake-build
+ 2425  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+ 2410  make
+ 2411  sudo make install
+ 
+ 
+ 2433  c++ --std=c++11 a.cpp -o test $(pkg-config --cflags --libs libmongocxx)  -Wl,-rpath,/usr/local/lib && ./test
+
