@@ -39,8 +39,34 @@ string mongo_get_field(bsoncxx::v_noabi::document::view view, const char* field_
         cerr << "MONGO FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
         return string("");
     }
-    
+
 }
+string mongo_get_date_field(bsoncxx::v_noabi::document::view view, const char* field_name){
+    try {
+        if (!view[field_name]){
+            cerr << "MONGO FIELD MISSING MISSING FIELD:"<<field_name << std::endl;
+            return string("");
+        }
+        std::chrono::duration<long int, std::ratio<1l, 1000l>> duration = view[field_name].get_date().value;
+
+        int time1 =  std::chrono::duration_cast<std::chrono::seconds>(duration);
+        //ReusableStringStream rss;
+        string str("");
+
+        str += duration.count();
+        cout << str;
+        //std::array<char, 64> timebuf;
+
+        //std::strftime(timebuf.data(), timebuf.size(), timeFormat, &time);
+        //std::string str(std::begin(arr), std::end(arr));        
+        return str;
+    } catch (const std::exception &e) {
+        cerr << "MONGO DATE FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+        return string("");
+    }
+
+}
+
 /* v["a"][0] */
 string mongo_get_array_item(bsoncxx::v_noabi::document::view view, const char* field_name, int item_id){
     try {
@@ -75,6 +101,7 @@ int main(){
         }
 
         try {
+            
 
             // MongoDB Connection and Query:
             mongocxx::instance inst{};
@@ -87,46 +114,56 @@ int main(){
 
             //collection.insert_one(document.view());
             auto cursor = collection.find({});
-            string sql("");
+
             for (auto&& doc : cursor) {
                 //std::cout << bsoncxx::to_json(doc) << std::endl;
                 //string _id = mongo_get_field(doc,"_id");
-                string _id("");
                 try {
+                    /* Create a transactional object. */
+                    work W(C);
+                    bsoncxx::v_noabi::document::element id = doc["_id"];
+                    bsoncxx::v_noabi::oid oid = id.get_oid().value; 
+                    //string _id = obj.OID().toString();
+                    string _id = oid.to_string();
                     string first_name = mongo_get_field(doc,"first_name");
                     string last_name = mongo_get_field(doc,"last_name");
                     string source = mongo_get_field(doc,"source");
-                    string apply_date = mongo_get_field(doc,"apply_date");
+                    string apply_date = mongo_get_date_field(doc,"apply_date");
                     string submitted_to_vipkid = mongo_get_field(doc,"submitted_to_vipkid");
                     string email = mongo_get_array_item(doc,"emails",0);
                     string phone_number = mongo_get_array_item(doc,"phone_numbers",0);
                     string message_id = mongo_get_field(doc,"message_id");
-                    //string replace = std::replace( first_name.begin(), first_name.end(), 's', 's');
-                    using std::string;
-                    first_name.erase(replace(first_name.begin(), first_name.end(), '\'', ''), first_name.end());
-                    cout << first_name;
-                    //cout << first_name <<"\t\t"<<last_name<<"\t\t"<<email<<"\t\t"<<phone_number<<"\t\t"<<message_id<< std::endl;
-                    string sql("INSERT INTO lead_source (_id,first_name,last_name,email,phone_number,source,apply_date,message_id,submitted_to_vipkid) ");
-                    sql += "VALUES('"+_id+"','"+first_name + "','"  + last_name+"','"+email+"','"+phone_number+"','"+source+"','"+apply_date+"','"+message_id+"','"+submitted_to_vipkid+"')";
-                    cout << sql<<endl;
 
+                    if(apply_date == ""){
+                        apply_date = "null";
+                    }else {
+                        apply_date = "'" + W.esc(apply_date) + "'";
+                    }
+
+                    if(submitted_to_vipkid == ""){
+                        submitted_to_vipkid = "0";
+                    }
+
+                    //auto s = W.esc(first_name);
+                    //cout << s << " \t " << first_name << "\n" << W.esc(last_name) << "\t" << last_name << "\n";
+                    //cout << first_name << "\n";
+                    string sql("INSERT INTO lead_source (_id,first_name,last_name,email,phone_number,source,apply_date,message_id,submitted_to_vipkid) ");
+                    sql += "VALUES('"+W.esc(_id)+"','"+W.esc(first_name) + "','"  + W.esc(last_name)+"','"+W.esc(email)+"','"+W.esc(phone_number)+"','"+W.esc(source)+"',"+apply_date+",'"+message_id+"','"+submitted_to_vipkid+"')";
+                    cout << sql <<endl;
+                    /* Execute SQL query */
+                    W.exec( sql );
+                    W.commit();
                 } catch (const std::exception &e) {
                     cerr << "RECORD ERROR:"<<e.what() << std::endl;
                     return 1;
                 }
-                
+
             }
 
 
             /* Create SQL statement */
-            sql = "INSERT INTO lead_source (_id,first_name,last_name,email,phone_number,source,apply_date,message_id,submitted_to_vipkid) VALUES('1','1','1','1','1','1','2018-01-01','1','0') ";
+            //sql = "INSERT INTO lead_source (_id,first_name,last_name,email,phone_number,source,apply_date,message_id,submitted_to_vipkid) VALUES('1','1','1','1','1','1','2018-01-01','1','0') ";
 
-            /* Create a transactional object. */
-            work W(C);
-
-            /* Execute SQL query */
-            W.exec( sql );
-            W.commit();
             cout << "Records created successfully" << endl;
         } catch (const std::exception &e) {
             cerr << "PSQLERROR:"<<e.what() << std::endl;
