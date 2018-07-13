@@ -35,6 +35,7 @@ std::string getenv2(string envkey, string envdefault){
     }
     string s_the_value(the_value);
     cout << "DEBUG:ENV:"<<envkey<<" = "<< the_value <<"\n";
+    
     return the_value;
 }
 
