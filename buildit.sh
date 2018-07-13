@@ -12,5 +12,21 @@
 # however these flags may be different on your system, you may need
 # to import said flags, and the include directories on your machine.
 
-g++ -std=c++11 -I. -I./lib/libpqxx/include  -o ./mongo2psql  mongo2psql.cpp -lpqxx -lpq  $(pkg-config --cflags --libs libmongocxx) -Wl,-rpath,/usr/local/lib 
-upx ./mongo2psql
+#g++ -std=c++11 -I. -I./lib/libpqxx/include  -o ./mongo2psql  mongo2psql.cpp  -lpqxx -lpq $(pkg-config --cflags --libs libmongocxx) -Wl,-rpath,/usr/local/lib -v
+g++ -std=c++11 -I. -I./lib/libpqxx/include  -o ./mongo2psql-static  mongo2psql.cpp  -lpqxx -lpq $(pkg-config --cflags --libs libmongocxx-static) -Wl,-rpath,/usr/local/lib 
+upx ./mongo2psql-static
+
+
+
+
+#libpqxx.a
+#libmongoc-static-1.0.a
+#libbson-static-1.0.a
+#libpqxx.a
+#libpq.a
+
+#libbsoncxx-static.a
+#
+# cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr/local ..
+
+
