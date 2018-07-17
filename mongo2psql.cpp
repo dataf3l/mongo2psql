@@ -120,7 +120,7 @@ int main(){
     string PGPORT  = getenv2("PGPORT", "5432");
     
     try {
-        connection C("dbname = ats user = postgres password = postgres hostaddr = 127.0.0.1 port = 5432");
+        connection C("dbname = "+PGBASE+" user = "+PGUSER+" password = "+PGPASS+" hostaddr = "+PGHOST+" port = "+PGPORT);
         if (C.is_open()) {
             cout << "Opened database successfully: " << C.dbname() << endl;
         } else {
