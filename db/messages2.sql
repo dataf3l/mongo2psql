@@ -1,8 +1,9 @@
 
 create table lead_source (
     _id varchar(100),
-    first_name varchar(50),
-    last_name varchar(50),
+    first_name varchar(255),
+    last_name varchar(255),
+    email varchar(255),
     email varchar(255) unique,
     phone_number varchar(20),
     source varchar(20),
