@@ -39,6 +39,18 @@ std::string getenv2(string envkey, string envdefault){
 }
 
 
+bool mongo_get_boolean_field_with_default(bsoncxx::v_noabi::document::view view, const char* field_name, bool default_value){
+    try {
+        if (!view[field_name]){
+            return default_value;
+        }
+        return view[field_name].get_bool().value;
+    } catch (const std::exception &e) {
+        cerr << "E01:MONGO FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+        return false;
+    }
+    
+}
 
 string mongo_get_field_with_default(bsoncxx::v_noabi::document::view view, const char* field_name, string default_value){
     try {
@@ -110,7 +122,10 @@ string mongo_get_array_item(bsoncxx::v_noabi::document::view view, const char* f
         return string("");
     }
 }
-
+inline const char * const BoolToString(bool b)
+{
+    return b ? "1" : "0";
+}
 int main(){
     string sql;
     char const* pgpass = getenv("PGPASS");
@@ -163,7 +178,8 @@ int main(){
                     string last_name = mongo_get_field(doc,"last_name");
                     string source = mongo_get_field(doc,"source");
                     string apply_date = mongo_get_date_field(doc,"apply_date");
-                    string submitted_to_vipkid = mongo_get_field_with_default(doc,"submitted_to_vipkid","0");
+                    bool submitted_to_vipkid = mongo_get_boolean_field_with_default(doc,"submitted_to_vipkid",false);
+                    string s_submitted_to_vipkid = BoolToString(submitted_to_vipkid);
                     string email = mongo_get_array_item(doc,"emails",0);
                     string phone_number = mongo_get_array_item(doc,"phone_numbers",0);
                     string message_id = mongo_get_field(doc,"message_id");
@@ -174,15 +190,12 @@ int main(){
                         apply_date = "'" + W.esc(apply_date) + "'";
                     }
                     
-                    if(submitted_to_vipkid == ""){
-                        submitted_to_vipkid = "0";
-                    }
                     
                     //auto s = W.esc(first_name);
                     //cout << s << " \t " << first_name << "\n" << W.esc(last_name) << "\t" << last_name << "\n";
                     //cout << first_name << "\n";
                     string sql("INSERT INTO lead_source (_id,first_name,last_name,email,phone_number,source,apply_date,message_id,submitted_to_vipkid) ");
-                    sql += "VALUES('"+W.esc(_id)+"','"+W.esc(first_name) + "','"  + W.esc(last_name)+"','"+W.esc(email)+"','"+W.esc(phone_number)+"','"+W.esc(source)+"',"+apply_date+",'"+message_id+"','"+submitted_to_vipkid+"') ON CONFLICT (message_id) DO UPDATE SET  "
+                    sql += "VALUES('"+W.esc(_id)+"','"+W.esc(first_name) + "','"  + W.esc(last_name)+"','"+W.esc(email)+"','"+W.esc(phone_number)+"','"+W.esc(source)+"',"+apply_date+",'"+message_id+"','"+s_submitted_to_vipkid+"') ON CONFLICT (message_id) DO UPDATE SET  "
                     "_id=EXCLUDED._id,"
                     "first_name=EXCLUDED.first_name,"
                     "last_name=EXCLUDED.last_name,"
