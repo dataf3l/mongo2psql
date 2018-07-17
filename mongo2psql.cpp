@@ -207,4 +207,5 @@ int main(){
     
 }
 
+//  https://stackoverflow.com/questions/48307724/mongocxx-static-driver-example-fails
 
