@@ -176,7 +176,18 @@ int main(){
                     //cout << s << " \t " << first_name << "\n" << W.esc(last_name) << "\t" << last_name << "\n";
                     //cout << first_name << "\n";
                     string sql("INSERT INTO lead_source (_id,first_name,last_name,email,phone_number,source,apply_date,message_id,submitted_to_vipkid) ");
-                    sql += "VALUES('"+W.esc(_id)+"','"+W.esc(first_name) + "','"  + W.esc(last_name)+"','"+W.esc(email)+"','"+W.esc(phone_number)+"','"+W.esc(source)+"',"+apply_date+",'"+message_id+"','"+submitted_to_vipkid+"')";
+                    sql += "VALUES('"+W.esc(_id)+"','"+W.esc(first_name) + "','"  + W.esc(last_name)+"','"+W.esc(email)+"','"+W.esc(phone_number)+"','"+W.esc(source)+"',"+apply_date+",'"+message_id+"','"+submitted_to_vipkid+"') ON CONFLICT (message_id) DO UPDATE SET  "
+                    "_id=EXCLUDED._id,"
+                    "first_name=EXCLUDED.first_name,"
+                    "last_name=EXCLUDED.last_name,"
+                    "email=EXCLUDED.email,"
+                    "phone_number=EXCLUDED.phone_number,"
+                    "source=EXCLUDED.source,"
+                    "apply_date=EXCLUDED.apply_date,"
+                    "submitted_to_vipkid=EXCLUDED.submitted_to_vipkid ";
+
+                    
+                    
                     //cout << sql <<endl;
                     /* Execute SQL query */
                     W.exec( sql );
@@ -208,4 +219,6 @@ int main(){
 }
 
 //  https://stackoverflow.com/questions/48307724/mongocxx-static-driver-example-fails
+
+
 
