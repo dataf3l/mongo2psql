@@ -48,7 +48,7 @@ string mongo_get_field_with_default(bsoncxx::v_noabi::document::view view, const
         //cout << x<<"\n";
         return view[field_name].get_utf8().value.to_string();
     } catch (const std::exception &e) {
-        cerr << "MONGO FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+        cerr << "E01:MONGO FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
         return string("");
     }
     
@@ -58,13 +58,13 @@ string mongo_get_field_with_default(bsoncxx::v_noabi::document::view view, const
 string mongo_get_field(bsoncxx::v_noabi::document::view view, const char* field_name){
     try {
         if (!view[field_name]){
-            cerr << "MONGO FIELD MISSING MISSING FIELD:"<<field_name << std::endl;
+            cerr << "E02:MONGO FIELD MISSING MISSING FIELD:"<<field_name << std::endl;
             return string("");
         }
         //cout << x<<"\n";
         return view[field_name].get_utf8().value.to_string();
     } catch (const std::exception &e) {
-        cerr << "MONGO FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+        cerr << "E03:MONGO FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
         return string("");
     }
     
@@ -72,7 +72,7 @@ string mongo_get_field(bsoncxx::v_noabi::document::view view, const char* field_
 string mongo_get_date_field(bsoncxx::v_noabi::document::view view, const char* field_name){
     try {
         if (!view[field_name]){
-            cerr << "MONGO FIELD MISSING MISSING FIELD:"<<field_name << std::endl;
+            cerr << "E04:MONGO FIELD MISSING MISSING FIELD:"<<field_name << std::endl;
             return string("");
         }
         std::chrono::duration<long int, std::ratio<1l, 1000l>> duration = view[field_name].get_date().value;
@@ -89,12 +89,12 @@ string mongo_get_date_field(bsoncxx::v_noabi::document::view view, const char* f
         std::string formatted_string(std::begin(timebuf), std::end(timebuf));
         return formatted_string;
     } catch (const std::exception &e) {
-        cerr << "MONGO DATE FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+        cerr << "E05:MONGO DATE FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
         try {
             // warning
             return mongo_get_field(view, field_name);
         } catch (const std::exception &e) {
-            cerr << "MONGO DATE FIELD WAS NOT A STRING OR A DATE ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+            cerr << "E06:MONGO DATE FIELD WAS NOT A STRING OR A DATE ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
             return string("");
         }
     }
@@ -106,7 +106,7 @@ string mongo_get_array_item(bsoncxx::v_noabi::document::view view, const char* f
     try {
         return view[field_name][item_id].get_utf8().value.to_string();
     } catch (const std::exception &e) {
-        cerr << "MONGO ARRAY ELEMENT MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+        cerr << "E07:MONGO ARRAY ELEMENT MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
         return string("");
     }
 }
@@ -128,9 +128,9 @@ int main(){
     try {
         connection C("dbname = "+PGBASE+" user = "+PGUSER+" password = "+PGPASS+" hostaddr = "+PGHOST+" port = "+PGPORT);
         if (C.is_open()) {
-            cout << "Opened database successfully: " << C.dbname() << endl;
+            //cout << "Opened database successfully: " << C.dbname() << endl;
         } else {
-            cout << "Can't open database" << endl;
+            cout << "E08:Can't open database" << endl;
             return 1;
         }
         
@@ -199,7 +199,7 @@ int main(){
                     W.exec( sql );
                     W.commit();
                 } catch (const std::exception &e) {
-                    cerr << "RECORD ERROR:"<<e.what() << std::endl;
+                    cerr << "E09:RECORD ERROR:"<<e.what() << std::endl;
                     return 1;
                 }
                 
@@ -211,14 +211,14 @@ int main(){
             
             cout << "Records created successfully" << endl;
         } catch (const std::exception &e) {
-            cerr << "PSQLERROR:"<<e.what() << std::endl;
+            cerr << "E10:PSQLERROR:"<<e.what() << std::endl;
             return 1;
         }
         
         
         C.disconnect ();
     } catch (const std::exception &e) {
-        cerr << "PSQLCONNERROR:"<<e.what() << std::endl;
+        cerr << "E11:PSQLCONNERROR:"<<e.what() << std::endl;
         return 1;
     }
     
