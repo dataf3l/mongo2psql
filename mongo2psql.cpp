@@ -89,7 +89,7 @@ string mongo_get_date_field(bsoncxx::v_noabi::document::view view, const char* f
         std::string formatted_string(std::begin(timebuf), std::end(timebuf));
         return formatted_string;
     } catch (const std::exception &e) {
-        cerr << "E05:MONGO DATE FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+        //cerr << "E05:MONGO DATE FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
         try {
             // warning
             return mongo_get_field(view, field_name);
@@ -225,6 +225,7 @@ int main(){
 }
 
 //  https://stackoverflow.com/questions/48307724/mongocxx-static-driver-example-fails
+
 
 
 
