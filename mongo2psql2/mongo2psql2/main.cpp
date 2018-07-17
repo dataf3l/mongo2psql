@@ -90,7 +90,13 @@ string mongo_get_date_field(bsoncxx::v_noabi::document::view view, const char* f
         return formatted_string;
     } catch (const std::exception &e) {
         cerr << "MONGO DATE FIELD MISSING ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
-        return string("");
+        try {
+            // warning
+            return mongo_get_field(view, field_name);
+        } catch (const std::exception &e) {
+            cerr << "MONGO DATE FIELD WAS NOT A STRING OR A DATE ERROR:"<<e.what() << " MISSING FIELD:"<<field_name << std::endl;
+            return string("");
+        }
     }
     
 }
