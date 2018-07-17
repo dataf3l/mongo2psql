@@ -4,6 +4,7 @@ create table lead_source (
     first_name varchar(255),
     last_name varchar(255),
     email varchar(255),
+    email varchar(255) unique,
     phone_number varchar(20),
     source varchar(20),
     apply_date timestamp,
